@@ -1,0 +1,64 @@
+@startuml
+start
+
+:Open home page;
+if (Main task?) then (Start intake)
+  :Open /symptom-input;
+  if (Mode?) then (Quick intake)
+    :Start anonymous AI chat;
+  else (Saved profile)
+    :Select existing health profile;
+    if (User allows history context?) then (yes)
+      :Send selected profile and allowed history to model;
+    else (no)
+      :Use current chat message only as model context;
+    endif
+  endif
+
+  repeat
+    :User sends symptom message;
+    :Backend checks safety keywords and negation;
+    if (Red flag detected?) then (yes)
+      :Save urgent session;
+      :Show Safety Notice;
+      :Recommend urgent professional care;
+      stop
+    else (no)
+      :AI asks follow-up question or marks intake complete;
+    endif
+  repeat while (More context needed?) is (yes)
+
+  :Create symptom session;
+  :Generate structured symptom summary;
+  :Show /summary/{session_id};
+  :Generate care guidance;
+  :Generate medication reference table;
+  :Generate solution plan table;
+  :Show /care-guidance/{session_id};
+
+elseif (Manage profile)
+  :Open /profile;
+  if (Existing user?) then (edit)
+    :Open /profile/{profile_id};
+  else (new)
+    :Open /profile/new;
+  endif
+  :Enter profile information;
+  if (Checkup text pasted?) then (yes)
+    :AI structures checkup record;
+    :Save health record;
+  endif
+  :Save profile;
+
+elseif (Generate UML)
+  :Open /uml-generator;
+  :Enter business problem and diagram type;
+  :Flask calls APIFree for PlantUML JSON;
+  :Display generated PlantUML text;
+
+else (About/Safety)
+  :Open information or safety page;
+endif
+
+stop
+@enduml

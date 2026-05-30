@@ -1,0 +1,17 @@
+@startuml
+start
+:User enters symptom, duration, severity, and context;
+:System checks deterministic safety rules;
+if (Emergency-like trigger found?) then (yes)
+  :Show safety notice;
+  :Recommend urgent professional medical help;
+  stop
+else (no)
+  :Generate follow-up questions;
+  :User answers follow-up questions;
+  :Generate structured symptom summary;
+  :Assign non-diagnostic triage guidance;
+  :Display summary with persistent disclaimer;
+endif
+stop
+@enduml

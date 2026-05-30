@@ -1,0 +1,60 @@
+@startuml
+class FlaskApp {
+  +create_app()
+  +register_routes()
+  +init_db()
+}
+
+class UserSession {
+  +id: int
+  +user_label: str
+  +triage_level: str
+  +safety_triggered: bool
+  +created_at: datetime
+}
+
+class SymptomInput {
+  +id: int
+  +session_id: int
+  +primary_symptom: str
+  +duration: str
+  +severity: int
+  +additional_context: str
+  +red_flags: json
+}
+
+class FollowUpQuestion {
+  +id: int
+  +session_id: int
+  +question_text: str
+  +answer_text: str
+}
+
+class SymptomSummary {
+  +id: int
+  +session_id: int
+  +main_complaint: str
+  +structured_summary: str
+  +triage_level: str
+  +next_steps: str
+  +disclaimer: str
+}
+
+class SafetyRule {
+  +rule_name: str
+  +pattern: regex
+  +detect_red_flags()
+}
+
+class AIModelClient {
+  +generate_followup_questions()
+  +generate_summary_text()
+}
+
+FlaskApp --> UserSession
+UserSession "1" --> "1" SymptomInput
+UserSession "1" --> "*" FollowUpQuestion
+UserSession "1" --> "*" SymptomSummary
+FlaskApp --> SafetyRule
+FlaskApp --> AIModelClient
+@enduml

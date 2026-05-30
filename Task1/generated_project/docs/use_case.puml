@@ -1,0 +1,24 @@
+@startuml
+left to right direction
+actor User
+actor "Student / Developer" as Developer
+actor "AI Model Provider" as AI
+
+rectangle "AI Symptom Intake and Triage Support Website" {
+  User --> (Enter symptom input)
+  User --> (Answer follow-up questions)
+  User --> (View structured symptom summary)
+  User --> (View safety notice)
+  User --> (Manage health profile)
+  User --> (Structure pasted checkup text)
+  Developer --> (Generate UML from business problem)
+  (Generate follow-up questions) --> AI
+  (Generate structured summary) --> AI
+  (Structure pasted checkup text) --> AI
+  (Generate UML from business problem) --> AI
+  (Check safety rules) ..> (View safety notice) : redirects when triggered
+  (Enter symptom input) ..> (Check safety rules) : includes
+  (Enter symptom input) ..> (Generate follow-up questions) : includes
+  (Answer follow-up questions) ..> (Generate structured summary) : includes
+}
+@enduml

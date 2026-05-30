@@ -1,0 +1,64 @@
+@startuml
+left to right direction
+
+actor "Patient / User" as User
+actor "Student / Developer" as Developer
+actor "AI Model API\n(APIFree/OpenAI-compatible)" as AI
+actor "Clinician / Pharmacist" as Clinician
+
+rectangle "AI Symptom Intake and Triage Support Website" {
+  usecase "Start quick intake" as UCQuick
+  usecase "Use saved health profile" as UCProfileIntake
+  usecase "Allow or disable history context" as UCConsent
+  usecase "Chat with AI follow-up questions" as UCChat
+  usecase "Check deterministic safety rules" as UCSafety
+  usecase "View safety notice" as UCNotice
+  usecase "Generate structured symptom summary" as UCSummary
+  usecase "Generate non-diagnostic care guidance" as UCGuidance
+  usecase "Generate AI medication reference table" as UCMedTable
+  usecase "Generate AI solution plan table" as UCPlanTable
+
+  usecase "Manage health profiles" as UCProfiles
+  usecase "Create or edit profile" as UCEditProfile
+  usecase "Import checkup text" as UCImport
+  usecase "AI-structure health record" as UCStructure
+
+  usecase "Generate PlantUML from business problem" as UCUml
+  usecase "Review patient-provided summary" as UCClinicianReview
+}
+
+User --> UCQuick
+User --> UCProfileIntake
+User --> UCProfiles
+Developer --> UCUml
+Clinician --> UCClinicianReview
+
+UCProfileIntake ..> UCConsent : includes
+UCQuick ..> UCChat : includes
+UCProfileIntake ..> UCChat : includes
+UCChat ..> UCSafety : includes
+UCSafety ..> UCNotice : extends on red flags
+UCChat ..> UCSummary : includes when enough context collected
+UCSummary ..> UCGuidance : includes
+UCGuidance ..> UCMedTable : includes
+UCGuidance ..> UCPlanTable : includes
+
+UCProfiles ..> UCEditProfile : includes
+UCEditProfile ..> UCImport : optional
+UCImport ..> UCStructure : includes
+
+UCChat --> AI
+UCSummary --> AI
+UCGuidance --> AI
+UCStructure --> AI
+UCUml --> AI
+UCClinicianReview ..> UCSummary : uses
+UCClinicianReview ..> UCGuidance : uses
+
+note right of UCMedTable
+  The system may suggest OTC medicine
+  categories for discussion, but it does
+  not provide prescriptions or personal
+  dosage instructions.
+end note
+@enduml

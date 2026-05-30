@@ -1,0 +1,143 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class FlaskApp {
+  +create_app()
+  +register_database_hooks()
+  +register_routes()
+  +ensure_runtime_schema()
+}
+
+class UserProfile {
+  +id: int
+  +display_name: str
+  +age: int
+  +sex: str
+  +height_cm: float
+  +weight_kg: float
+  +allergies: str
+  +current_medications: str
+  +chronic_conditions: str
+  +past_history: str
+  +family_history: str
+  +emergency_contact: str
+  +consent_use_history: bool
+}
+
+class HealthRecord {
+  +id: int
+  +profile_id: int
+  +record_type: str
+  +title: str
+  +record_date: str
+  +source_text: str
+  +structured_content: json
+}
+
+class UserSession {
+  +id: int
+  +profile_id: int
+  +user_label: str
+  +triage_level: str
+  +safety_triggered: bool
+  +created_at: datetime
+}
+
+class SymptomInput {
+  +id: int
+  +session_id: int
+  +primary_symptom: str
+  +duration: str
+  +severity: int
+  +additional_context: str
+  +red_flags: json
+}
+
+class FollowUpQuestion {
+  +id: int
+  +session_id: int
+  +question_text: str
+  +answer_text: str
+}
+
+class SymptomSummary {
+  +id: int
+  +session_id: int
+  +main_complaint: str
+  +structured_summary: str
+  +triage_level: str
+  +next_steps: str
+  +disclaimer: str
+}
+
+class CareGuidance {
+  +self_care: list
+  +clinician_discussion: list
+  +medication_discussion: list
+  +medication_reference: list
+  +care_plan_table: list
+  +monitoring: list
+  +avoid: list
+  +safety_note: str
+}
+
+class MedicationReferenceRow {
+  +option: str
+  +purpose: str
+  +suitability: str
+  +dose_boundary: str
+  +cautions: str
+}
+
+class CarePlanRow {
+  +priority: str
+  +action: str
+  +why: str
+  +when_to_seek_help: str
+}
+
+class SafetyRule {
+  +rule_name: str
+  +pattern: regex
+  +detect_red_flags()
+  +has_negation_near_keyword()
+}
+
+class AIModelClient {
+  +call_model_json()
+  +generate_followup_questions()
+  +run_intake_chat()
+  +generate_summary_text()
+  +generate_care_guidance()
+  +structure_health_record()
+  +generate_uml_diagram()
+}
+
+class UMLDiagram {
+  +diagram_type: str
+  +title: str
+  +plantuml: str
+  +explanation: str
+}
+
+FlaskApp --> UserProfile
+FlaskApp --> UserSession
+FlaskApp --> SafetyRule
+FlaskApp --> AIModelClient
+
+UserProfile "1" --> "*" HealthRecord
+UserProfile "1" --> "*" UserSession
+UserSession "1" --> "1" SymptomInput
+UserSession "1" --> "*" FollowUpQuestion
+UserSession "1" --> "*" SymptomSummary
+SymptomSummary --> CareGuidance
+CareGuidance "1" --> "*" MedicationReferenceRow
+CareGuidance "1" --> "*" CarePlanRow
+
+AIModelClient ..> FollowUpQuestion : generates
+AIModelClient ..> SymptomSummary : generates
+AIModelClient ..> CareGuidance : generates
+AIModelClient ..> HealthRecord : structures
+AIModelClient ..> UMLDiagram : generates
+SafetyRule ..> SymptomInput : scans
+@enduml

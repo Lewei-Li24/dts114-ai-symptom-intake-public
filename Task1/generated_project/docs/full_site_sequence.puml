@@ -1,0 +1,51 @@
+@startuml
+actor User
+participant "Browser UI" as Browser
+participant "Flask Routes / APIs" as Flask
+database "SQLite" as DB
+participant "Safety Rule Layer" as Safety
+participant "AI Model API" as AI
+
+User -> Browser : Choose quick intake or saved profile
+Browser -> Flask : GET /symptom-input
+Flask -> DB : Load saved profiles
+DB --> Flask : Profiles
+Flask --> Browser : Render intake launcher
+
+loop AI chat turns
+  User -> Browser : Send symptom message
+  Browser -> Flask : POST /api/intake-chat
+  Flask -> Safety : Check red flags and negations
+  alt red flag found
+    Safety --> Flask : safety_triggered = true
+    Flask -> DB : Save urgent session and symptom input
+    Flask --> Browser : safety notice URL
+  else safe to continue intake
+    Flask -> AI : Generate follow-up or completion JSON
+    AI --> Flask : assistant_message, complete, extracted fields
+    Flask --> Browser : Render assistant response
+  end
+end
+
+alt intake complete
+  Flask -> DB : Create session, symptom input, follow-up answers
+  Flask -> AI : Generate structured summary
+  AI --> Flask : summary JSON
+  Flask -> DB : Save SymptomSummary
+  Flask --> Browser : Summary and care guidance URLs
+end
+
+User -> Browser : Open care guidance
+Browser -> Flask : GET /care-guidance/{session_id}
+Flask -> DB : Load session, symptom, summary
+Flask -> AI : Generate care guidance, medication reference, solution table
+AI --> Flask : Safe structured JSON
+Flask -> Safety : Remove unsafe dose / Rx wording
+Flask --> Browser : Render non-prescriptive tables
+
+User -> Browser : Open UML generator
+Browser -> Flask : POST /api/uml/generate
+Flask -> AI : Generate PlantUML JSON
+AI --> Flask : diagram_type, plantuml, explanation
+Flask --> Browser : Render PlantUML text
+@enduml
