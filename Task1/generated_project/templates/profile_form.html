@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}{{ form_title }}{% endblock %}
+
+{% block content %}
+<section class="page-shell">
+    <p class="eyebrow">Step B</p>
+    <h1>{{ form_title }}</h1>
+    <p class="form-intro">{{ form_intro }}</p>
+
+    <div class="workflow-steps">
+        <a class="step-pill" href="{{ url_for('profile_page') }}"><span>1</span> Choose user</a>
+        <article class="step-pill active"><span>2</span> Edit profile</article>
+        <article class="step-pill"><span>3</span> Structure checkup text</article>
+    </div>
+
+    <form class="profile-form" method="post" data-profile-form>
+        {% if profile %}
+        <input type="hidden" name="profile_id" value="{{ profile.id }}" data-profile-id>
+        {% endif %}
+        <div class="form-grid two">
+            <label>Name or label<input name="display_name" value="{{ profile.display_name if profile and profile.display_name else '' }}" data-profile-field></label>
+            <label>Age<input type="number" name="age" min="0" max="130" value="{{ profile.age if profile and profile.age is not none else '' }}" data-profile-field></label>
+            <label>Sex<input name="sex" value="{{ profile.sex if profile and profile.sex else '' }}" data-profile-field></label>
+            <label>Height cm<input type="number" step="0.1" name="height_cm" value="{{ profile.height_cm if profile and profile.height_cm is not none else '' }}" data-profile-field></label>
+            <label>Weight kg<input type="number" step="0.1" name="weight_kg" value="{{ profile.weight_kg if profile and profile.weight_kg is not none else '' }}" data-profile-field></label>
+            <label>Emergency contact<input name="emergency_contact" value="{{ profile.emergency_contact if profile and profile.emergency_contact else '' }}" data-profile-field></label>
+        </div>
+        <label>Allergies<textarea name="allergies" rows="2" data-profile-field>{{ profile.allergies if profile and profile.allergies else '' }}</textarea></label>
+        <label>Current medications<textarea name="current_medications" rows="2" data-profile-field>{{ profile.current_medications if profile and profile.current_medications else '' }}</textarea></label>
+        <label>Chronic conditions<textarea name="chronic_conditions" rows="2" data-profile-field>{{ profile.chronic_conditions if profile and profile.chronic_conditions else '' }}</textarea></label>
+        <label>Past medical history<textarea name="past_history" rows="3" data-profile-field>{{ profile.past_history if profile and profile.past_history else '' }}</textarea></label>
+        <label>Family history<textarea name="family_history" rows="2" data-profile-field>{{ profile.family_history if profile and profile.family_history else '' }}</textarea></label>
+        <label class="toggle-row">
+            <input type="checkbox" name="consent_use_history" value="1" data-profile-field {% if profile and profile.consent_use_history %}checked{% endif %}>
+            Allow model-assisted intake to use this profile and recent records when I enable history in chat
+        </label>
+
+        <div class="record-import">
+            <h2>Auto-structure a checkup record</h2>
+            <p class="form-intro">Paste text from a checkup sheet. The AI returns one unified report JSON format; this page does not upload or recognize images.</p>
+            <div class="form-grid two">
+                <label>Record title<input name="record_title" data-record-title placeholder="Annual checkup"></label>
+                <label>Record date<input name="record_date" data-record-date type="date"></label>
+                <label>Record category
+                    <select name="record_type" data-record-type>
+                        <option value="checkup">Checkup report</option>
+                        <option value="lab">Lab results</option>
+                        <option value="imaging">Imaging report</option>
+                        <option value="medication">Medication history</option>
+                        <option value="visit_note">Visit note</option>
+                        <option value="history">Medical history</option>
+                        <option value="other">Other</option>
+                    </select>
+                </label>
+            </div>
+            <label>Paste checkup text<textarea name="source_text" data-record-source rows="7" placeholder="Paste lab results or checkup notes here."></textarea></label>
+            <button class="button secondary" type="button" data-analyze-record>Auto-structure Preview</button>
+            <button class="button secondary" type="button" data-load-demo-profile>Load Demo Patient</button>
+            <pre class="record-preview" data-record-preview></pre>
+        </div>
+
+        <div class="button-row">
+            <button class="button primary" type="submit">{{ submit_label }}</button>
+            <a class="button secondary" href="{{ url_for('profile_page') }}">Back to Profiles</a>
+        </div>
+    </form>
+
+    <section class="content-band compact">
+        <div class="section-heading">
+            <h2>Saved Records</h2>
+            <span>{{ records|length }} records</span>
+        </div>
+        <div class="record-list">
+            {% for record in records %}
+            <article class="summary-text">
+                <h3>{{ record.title }}</h3>
+                <p>{{ record.record_date or "No date" }} - {{ record.record_type }}</p>
+                <pre>{{ record.structured_content }}</pre>
+            </article>
+            {% else %}
+            <p class="form-intro">No records saved yet.</p>
+            {% endfor %}
+        </div>
+    </section>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='profile.js') }}"></script>
+{% endblock %}

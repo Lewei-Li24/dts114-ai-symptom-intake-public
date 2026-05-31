@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}AI Intake Setup{% endblock %}
+
+{% block content %}
+<section class="page-shell {% if intake_ready %}intake-ready-shell{% endif %}">
+    <p class="eyebrow">Step 1</p>
+    <h1>AI Symptom Intake</h1>
+    {% if not intake_ready %}
+    <p class="form-intro">Start by choosing whether this is a quick anonymous intake or a personalized intake using a saved user profile. After that, the AI chat will ask follow-up questions.</p>
+    {% else %}
+    <p class="form-intro compact-intro">Answer the assistant's questions. When enough context is collected, the app creates a summary and non-diagnostic care guidance.</p>
+    {% endif %}
+
+    <div class="workflow-steps">
+        <article class="step-pill active"><span>1</span> Choose mode</article>
+        <article class="step-pill {% if intake_ready %}active{% endif %}"><span>2</span> AI questions</article>
+        <article class="step-pill"><span>3</span> Summary and care links</article>
+    </div>
+
+    {% if not intake_ready %}
+    <div class="intake-launcher-grid">
+        <a class="choice-card primary-choice intake-mode-card" href="{{ url_for('symptom_input_page', mode='quick') }}">
+            <div>
+                <span class="choice-kicker">Fast path</span>
+                <h2>Quick Intake</h2>
+                <p>No saved profile is used. Best for a short demo or anonymous symptom collection.</p>
+            </div>
+            <span class="choice-action">Start Quick Intake</span>
+        </a>
+        <aside class="profile-help-strip">
+            <div>
+                <span class="choice-kicker">Need a saved profile?</span>
+                <h2>Manage health profiles separately</h2>
+                <p>Add users or import checkup text from the profile management page, then return here to start personalized intake.</p>
+            </div>
+            <a class="button secondary" href="{{ url_for('profile_page') }}">Manage Profiles</a>
+        </aside>
+    </div>
+
+    <section class="content-band compact">
+        <div class="section-heading">
+            <h2>Use Existing User Profile</h2>
+            <span>{{ profiles|length }} users</span>
+        </div>
+        <div class="profile-grid picker-grid">
+            {% for profile in profiles %}
+            <article class="profile-card picker-card">
+                <div>
+                    <span class="choice-kicker">Saved user</span>
+                    <h3>{{ profile.display_name or "Unnamed profile" }}</h3>
+                    <p>{{ profile.age or "Age not set" }} / {{ profile.sex or "sex not set" }} / {{ profile.record_count }} records</p>
+                </div>
+                <dl>
+                    <div><dt>Allergies</dt><dd>{{ profile.allergies or "Not specified" }}</dd></div>
+                    <div><dt>Medicines</dt><dd>{{ profile.current_medications or "Not specified" }}</dd></div>
+                </dl>
+                <div class="button-row">
+                    <a class="button primary" href="{{ url_for('symptom_input_page', mode='profile', profile_id=profile.id) }}">Select and Continue</a>
+                </div>
+            </article>
+            {% else %}
+            <article class="summary-text">
+                <h3>No saved profiles yet</h3>
+                <p>Use quick intake now, or manage profiles if you want personalized context later.</p>
+                <a class="button secondary" href="{{ url_for('profile_page') }}">Manage Profiles</a>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+    {% else %}
+    <div class="intake-status-strip">
+        <div>
+            <span class="choice-kicker">Current intake</span>
+            {% if intake_mode == "profile" and selected_profile %}
+            <strong>{{ selected_profile.display_name or "Selected profile" }}</strong>
+            <span>{{ selected_record_count }} saved records</span>
+            {% else %}
+            <strong>Quick anonymous intake</strong>
+            <span>No saved profile context</span>
+            {% endif %}
+        </div>
+        <a class="button secondary" href="{{ url_for('symptom_input_page') }}">Change Mode</a>
+    </div>
+    <div class="intake-layout">
+        <aside class="intake-sidebar">
+            <span class="choice-kicker">Selected mode</span>
+            {% if intake_mode == "profile" and selected_profile %}
+            <h2>{{ selected_profile.display_name or "Selected profile" }}</h2>
+            <dl>
+                <div><dt>Age</dt><dd>{{ selected_profile.age or "Not specified" }}</dd></div>
+                <div><dt>Allergies</dt><dd>{{ selected_profile.allergies or "Not specified" }}</dd></div>
+                <div><dt>Conditions</dt><dd>{{ selected_profile.chronic_conditions or "Not specified" }}</dd></div>
+                <div><dt>Records</dt><dd>{{ selected_record_count }}</dd></div>
+                <div><dt>History Consent</dt><dd>{{ "On by default" if selected_profile.consent_use_history else "Off by default" }}</dd></div>
+            </dl>
+            {% else %}
+            <h2>Quick Intake</h2>
+            <p>No saved user profile will be used for this intake.</p>
+            {% endif %}
+        </aside>
+
+        <section class="chat-panel" data-chat-panel data-profile-id="{{ selected_profile.id if selected_profile else '' }}">
+            <div class="chat-context">
+                <span class="status">{{ "Personalized mode" if selected_profile else "Quick mode" }}</span>
+                <p>{{ "The current chat history is sent for accuracy. The selected profile is used only when the consent toggle is enabled." if selected_profile else "The current chat history is sent to the model so the assistant can summarize accurately." }}</p>
+            </div>
+            <div class="ai-provider-panel {% if not ai_configured %}warning{% endif %}" data-ai-provider-panel>
+                <div>
+                    <strong data-ai-health-summary>{{ ai_provider_name ~ " model configured" if ai_configured else "APIFree key not configured" }}</strong>
+                    {% if ai_last_error %}
+                    <span data-ai-health-detail>Last model error: {{ ai_last_error }}</span>
+                    {% else %}
+                    <span data-ai-health-detail>{{ "The chat will call the model API." if ai_configured else "Restart with scripts/start_apifree.ps1 and paste your APIFree key to enable live model answers." }}</span>
+                    {% endif %}
+                </div>
+                <span>{{ ai_model_name }} via {{ ai_base_url }}</span>
+            </div>
+            <div class="connection-check-row">
+                <button class="button secondary compact-button" type="button" data-ai-test-button>Test APIFree Connection</button>
+                <span data-ai-test-result>Use this before demoing the chat.</span>
+            </div>
+            {% if selected_profile %}
+            <label class="toggle-row">
+                <input type="checkbox" data-allow-history {% if selected_profile and selected_profile.consent_use_history %}checked{% endif %} {% if not selected_profile %}disabled{% endif %}>
+                Allow the model to use the selected health profile and saved records for this intake
+            </label>
+            {% else %}
+            <p class="privacy-note">Profile context is off in quick mode. Choose an existing user profile to enable personalized intake.</p>
+            {% endif %}
+            <div class="chat-messages" data-chat-messages>
+                <article class="chat-message assistant">
+                    <strong>Assistant</strong>
+                    <p>Describe what feels uncomfortable. I will ask one follow-up question at a time.</p>
+                </article>
+            </div>
+            <form class="chat-form" data-chat-form>
+                <label class="sr-only" for="chat-message">Your message</label>
+                <textarea id="chat-message" data-chat-input rows="3" placeholder="Example: I have had a headache since yesterday and feel a little dizzy." required autofocus></textarea>
+                <button class="button primary" type="submit">Send</button>
+            </form>
+            <p class="privacy-note">Press Enter to send, Shift+Enter for a new line. The current intake chat is sent for context; the saved profile and records are sent only when you enable the profile toggle.</p>
+            <div class="ai-status" data-chat-status>Waiting for your first message.</div>
+            <div class="chat-actions" data-chat-actions hidden></div>
+        </section>
+    </div>
+
+    <details class="manual-fallback">
+        <summary>Use simple form instead</summary>
+        {% if error %}<p class="form-error">{{ error }}</p>{% endif %}
+        <form method="post">
+            <input type="hidden" name="intake_mode" value="{{ intake_mode }}">
+            {% if selected_profile %}<input type="hidden" name="profile_id" value="{{ selected_profile.id }}">{% endif %}
+            <label>Main symptom
+                <input name="primary_symptom" placeholder="Example: headache, cough, stomach pain" required>
+            </label>
+            <label>Duration
+                <input name="duration" placeholder="Example: 2 days, since this morning" required>
+            </label>
+            <label>Severity from 0 to 10
+                <input type="number" name="severity" min="0" max="10" value="3" required>
+            </label>
+            <label>Additional context
+                <textarea name="additional_context" rows="5" placeholder="Include changes over time, associated symptoms, current medicines, allergies, or anything that worries you."></textarea>
+            </label>
+            <button class="button secondary" type="submit">Generate Follow-up Questions</button>
+        </form>
+    </details>
+    {% endif %}
+</section>
+{% endblock %}
+
+{% block scripts %}
+{% if intake_ready %}
+<script src="{{ url_for('static', filename='symptom_chat.js') }}?v=live-ai-errors-2"></script>
+{% endif %}
+{% endblock %}

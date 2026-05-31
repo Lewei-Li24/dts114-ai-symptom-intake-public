@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Follow-up Questions{% endblock %}
+
+{% block content %}
+<section class="form-shell wide">
+    <p class="eyebrow">Step 2</p>
+    <h1>Follow-up Questions</h1>
+    <p class="form-intro">Answer what you can. These questions are for intake context only and are not a diagnosis.</p>
+    <form method="post" data-followup-form>
+        {% for question in questions %}
+        <label>{{ question.question_text }}
+            <textarea name="question_{{ question.id }}" rows="3" placeholder="Your answer" data-followup-answer></textarea>
+        </label>
+        {% endfor %}
+        <button class="button primary" type="submit">Create Structured Summary</button>
+    </form>
+    <p class="privacy-note">Press Enter to submit answers, Shift+Enter for a new line.</p>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='followup_keyboard.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Care Guidance{% endblock %}
+
+{% block content %}
+<section class="page-shell">
+    <p class="eyebrow">Supportive guidance</p>
+    <h1>Non-diagnostic Care Guidance</h1>
+    {% if ai_error %}
+    <div class="safety-panel">
+        <h2>Live APIFree output required</h2>
+        <p>{{ ai_error.message }}</p>
+        <p>Provider: {{ ai_error.ai_provider }} / Model: {{ ai_error.ai_model }} / Base URL: {{ ai_error.ai_base_url }}</p>
+        <p>Last error: {{ ai_error.ai_last_error or "not available" }}</p>
+    </div>
+    <div class="button-row">
+        <a class="button primary" href="{{ url_for('care_guidance_page', session_id=session.id) }}">Try Again</a>
+        <a class="button secondary" href="{{ url_for('symptom_summary_page', session_id=session.id) }}">Back to Summary</a>
+    </div>
+    {% else %}
+    <div class="safety-panel">
+        <h2>Medication safety boundary</h2>
+        <p>This page does not prescribe medicine or generate personal doses. It uses the AI provider to create medicine discussion references and a care-plan table for review with a licensed clinician or pharmacist.</p>
+        <p>{{ guidance.medication_boundary }}</p>
+        <p>{{ guidance.safety_note }}</p>
+    </div>
+
+    <section class="summary-text">
+        <h2>AI Medication Reference Table</h2>
+        <p class="form-intro">These are not prescriptions. Use them as discussion points with a clinician or pharmacist, especially if you have allergies, chronic conditions, pregnancy, or current medicines.</p>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Medicine option</th>
+                        <th>Purpose</th>
+                        <th>Suitability check</th>
+                        <th>Dose / prescription boundary</th>
+                        <th>Cautions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in guidance.medication_reference %}
+                    <tr>
+                        <td>{{ item.option }}</td>
+                        <td>{{ item.purpose }}</td>
+                        <td>{{ item.suitability }}</td>
+                        <td>{{ item.dose_boundary }}</td>
+                        <td>{{ item.cautions }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="summary-text">
+        <h2>AI Solution Plan Table</h2>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Priority</th>
+                        <th>Action</th>
+                        <th>Why</th>
+                        <th>When to seek help</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in guidance.care_plan_table %}
+                    <tr>
+                        <td>{{ row.priority }}</td>
+                        <td>{{ row.action }}</td>
+                        <td>{{ row.why }}</td>
+                        <td>{{ row.when_to_seek_help }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <div class="guidance-grid">
+        <article class="summary-panel">
+            <h2>Self-care to consider</h2>
+            <ul>
+                {% for item in guidance.self_care %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </article>
+        <article class="summary-panel">
+            <h2>Medicine discussion prompts</h2>
+            <ul>
+                {% for item in guidance.medication_discussion %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </article>
+        <article class="summary-panel">
+            <h2>Ask a professional</h2>
+            <ul>
+                {% for item in guidance.clinician_discussion %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </article>
+        <article class="summary-panel">
+            <h2>Monitor</h2>
+            <ul>
+                {% for item in guidance.monitoring %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </article>
+        <article class="summary-panel">
+            <h2>Visit preparation</h2>
+            <ul>
+                {% for item in guidance.visit_preparation %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </article>
+        <article class="summary-panel accent">
+            <h2>Avoid</h2>
+            <ul>
+                {% for item in guidance.avoid %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </article>
+    </div>
+    <div class="button-row">
+        <a class="button secondary" href="{{ url_for('symptom_summary_page', session_id=session.id) }}">Back to Summary</a>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

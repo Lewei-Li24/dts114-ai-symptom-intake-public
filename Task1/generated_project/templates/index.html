@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}AI Symptom Intake and Triage Support{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-copy">
+        <p class="eyebrow">Non-diagnostic triage support</p>
+        <h1>AI Symptom Intake and Triage Support</h1>
+        <p class="lede">Collect symptoms, generate follow-up questions, create a structured summary, and suggest careful next steps without diagnosing or prescribing.</p>
+        <div class="hero-actions">
+            <a class="button primary" href="{{ url_for('symptom_input_page', mode='quick') }}">Quick Intake</a>
+            <a class="button secondary" href="{{ url_for('profile_page') }}">Choose Profile</a>
+            <a class="button secondary" href="{{ url_for('safety_notice_page') }}">Read Safety Notice</a>
+        </div>
+    </div>
+    <img class="hero-image" src="{{ url_for('static', filename='generated_banner.png') }}" alt="Generated healthcare intake interface illustration">
+</section>
+
+<section class="metrics" aria-label="System summary">
+    <article>
+        <strong>{{ session_count }}</strong>
+        <span>Intake sessions</span>
+    </article>
+    <article>
+        <strong>{{ summary_count }}</strong>
+        <span>Structured summaries</span>
+    </article>
+    <article>
+        <strong>{{ safety_count }}</strong>
+        <span>Safety notices triggered</span>
+    </article>
+</section>
+
+<section class="content-band">
+    <div class="section-heading">
+        <h2>Workflow</h2>
+        <a href="{{ url_for('about_page') }}">How it works</a>
+    </div>
+    <div class="item-grid">
+        <article class="item-card">
+            <h3>1. Choose Mode</h3>
+            <p>Users start with quick anonymous intake or select an existing health profile for personalized context.</p>
+        </article>
+        <article class="item-card">
+            <h3>2. AI Follow-up</h3>
+            <p>The assistant asks focused follow-up questions and can use saved profile context only with consent.</p>
+        </article>
+        <article class="item-card">
+            <h3>3. Safe Summary</h3>
+            <p>The app returns a structured symptom summary and non-diagnostic care guidance.</p>
+        </article>
+    </div>
+</section>
+
+<section class="content-band">
+    <div class="section-heading">
+        <h2>Recent Sessions</h2>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Session</th>
+                    <th>Main Symptom</th>
+                    <th>Triage Level</th>
+                    <th>Safety</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for session in recent_sessions %}
+                <tr>
+                    <td>#{{ session.id }}</td>
+                    <td>{{ session.primary_symptom or "Not provided" }}</td>
+                    <td><span class="status">{{ session.triage_level }}</span></td>
+                    <td>{{ "Safety notice" if session.safety_triggered else "Standard flow" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Symptom Summary{% endblock %}
+
+{% block content %}
+<section class="page-shell">
+    <p class="eyebrow">Step 3</p>
+    <h1>Structured Symptom Summary</h1>
+    {% if ai_error %}
+    <div class="safety-panel">
+        <h2>Live APIFree output required</h2>
+        <p>{{ ai_error.message }}</p>
+        <p>Provider: {{ ai_error.ai_provider }} / Model: {{ ai_error.ai_model }} / Base URL: {{ ai_error.ai_base_url }}</p>
+        <p>Last error: {{ ai_error.ai_last_error or "not available" }}</p>
+    </div>
+    {% else %}
+    <div class="summary-layout">
+        <article class="summary-panel">
+            <h2>Main Complaint</h2>
+            <p>{{ summary.main_complaint }}</p>
+            <dl>
+                <div><dt>Duration</dt><dd>{{ symptom.duration }}</dd></div>
+                <div><dt>Severity</dt><dd>{{ symptom.severity }}/10</dd></div>
+                <div><dt>Triage Level</dt><dd><span class="status">{{ summary.triage_level }}</span></dd></div>
+            </dl>
+        </article>
+        <article class="summary-panel accent">
+            <h2>Next Steps</h2>
+            <p>{{ summary.next_steps }}</p>
+            <div class="button-row">
+                <a
+                    class="button primary"
+                    href="{{ url_for('care_guidance_page', session_id=session.id) }}"
+                    data-loading-link
+                    data-loading-message="AI is generating the care guidance and medication reference table. This may take a few seconds."
+                >View Care Guidance</a>
+            </div>
+        </article>
+    </div>
+    <article class="summary-text">
+        <h2>Summary for a Healthcare Professional</h2>
+        <p>{{ summary.structured_summary }}</p>
+    </article>
+    {% if answered_questions %}
+    <article class="summary-text">
+        <h2>Follow-up Answers</h2>
+        <dl>
+            {% for question in answered_questions %}
+            <div>
+                <dt>{{ question.question_text }}</dt>
+                <dd>{{ question.answer_text }}</dd>
+            </div>
+            {% endfor %}
+        </dl>
+    </article>
+    {% endif %}
+    {% endif %}
+</section>
+<div class="loading-overlay" data-loading-overlay hidden>
+    <div class="loading-dialog" role="status" aria-live="polite">
+        <div class="loading-spinner" aria-hidden="true"></div>
+        <h2>Generating AI guidance</h2>
+        <p data-loading-text>AI is preparing the next page. Please wait.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.querySelectorAll("[data-loading-link]").forEach((link) => {
+    link.addEventListener("click", () => {
+        const overlay = document.querySelector("[data-loading-overlay]");
+        const text = document.querySelector("[data-loading-text]");
+        if (overlay && text) {
+            text.textContent = link.dataset.loadingMessage || "AI is preparing the next page. Please wait.";
+            overlay.hidden = false;
+        }
+        link.setAttribute("aria-disabled", "true");
+        link.textContent = "Generating...";
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Safety Notice{% endblock %}
+
+{% block content %}
+<section class="page-shell">
+    <p class="eyebrow">Safety first</p>
+    <h1>Safety Notice</h1>
+    <div class="safety-panel">
+        <h2>This website does not provide diagnosis or treatment.</h2>
+        <p>{{ disclaimer }}</p>
+        <p>If you report severe or rapidly worsening symptoms, chest pain, trouble breathing, confusion, fainting, sudden weakness, uncontrolled bleeding, or other concerning symptoms, seek urgent professional medical help.</p>
+    </div>
+    {% if symptom %}
+    <article class="summary-text">
+        <h2>Submitted Symptom</h2>
+        <dl>
+            <div><dt>Main symptom</dt><dd>{{ symptom.primary_symptom }}</dd></div>
+            <div><dt>Duration</dt><dd>{{ symptom.duration }}</dd></div>
+            <div><dt>Severity</dt><dd>{{ symptom.severity }}/10</dd></div>
+            <div><dt>Safety flags</dt><dd>{{ symptom.red_flags }}</dd></div>
+        </dl>
+    </article>
+    {% endif %}
+    <a class="button secondary" href="{{ url_for('symptom_input_page') }}">Start New Intake</a>
+</section>
+{% endblock %}

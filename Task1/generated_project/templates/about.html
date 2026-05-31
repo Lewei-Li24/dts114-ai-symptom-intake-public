@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}About{% endblock %}
+
+{% block content %}
+<section class="page-shell">
+    <p class="eyebrow">Project scope</p>
+    <h1>About This AI Intake System</h1>
+    <div class="item-grid two">
+        <article class="item-card">
+            <h2>What it does</h2>
+            <p>The system collects symptom information, generates follow-up questions, and creates a structured summary that a user could share with a healthcare professional.</p>
+        </article>
+        <article class="item-card">
+            <h2>What it does not do</h2>
+            <p>It does not diagnose, prescribe medicine, identify diseases, or replace professional medical judgement.</p>
+        </article>
+    </div>
+    <article class="summary-text">
+        <h2>AI Use</h2>
+        <p>The app can use an OpenAI-compatible model provider such as APIFree to generate follow-up questions and summaries. If no API key is configured, deterministic fallback logic keeps the demo reproducible.</p>
+    </article>
+</section>
+{% endblock %}

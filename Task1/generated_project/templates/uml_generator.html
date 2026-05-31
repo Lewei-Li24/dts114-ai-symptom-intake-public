@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}UML Generator{% endblock %}
+{% block content %}
+<section class="hero compact-hero">
+    <p class="eyebrow">AI-Specific Tooling</p>
+    <h1>UML Generator</h1>
+    <p>Generate PlantUML from a business problem through the Flask backend and APIFree model API.</p>
+</section>
+
+<section class="content-panel">
+    <div class="section-heading">
+        <h2>Generate a Diagram</h2>
+        <span>Use this as evidence for automatic SDLC/UML generation.</span>
+    </div>
+    <form id="uml-form" class="form-grid">
+        <label>
+            Diagram type
+            <select id="diagram-type" name="diagram_type">
+                <option value="activity">Activity diagram</option>
+                <option value="use_case">Use case diagram</option>
+                <option value="class">Class diagram</option>
+                <option value="sequence">Sequence diagram</option>
+            </select>
+        </label>
+        <label class="full-span">
+            Business problem
+            <textarea id="business-problem" name="business_problem" rows="6" placeholder="Example: Build a safe AI symptom intake website that asks follow-up questions, summarizes symptoms, and provides non-diagnostic guidance."></textarea>
+        </label>
+        <button type="submit" class="primary-button">Generate UML</button>
+    </form>
+</section>
+
+<section class="content-panel">
+    <div class="section-heading">
+        <h2>Generated PlantUML</h2>
+        <span id="uml-status">Waiting for input.</span>
+    </div>
+    <pre id="uml-output" class="code-output">@startuml
+' Generated UML will appear here.
+@enduml</pre>
+    <p id="uml-explanation" class="muted"></p>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='uml_generator.js') }}"></script>
+{% endblock %}

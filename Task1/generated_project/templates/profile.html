@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Health Profiles{% endblock %}
+
+{% block content %}
+<section class="page-shell">
+    <p class="eyebrow">Profile management</p>
+    <div class="profile-management-header">
+        <div>
+            <h1>Health Profiles</h1>
+            <p class="form-intro">Create, edit, and manage saved health information for future AI intake sessions. Starting an intake is handled from the AI Symptom Intake page.</p>
+        </div>
+        <a class="button primary" href="{{ url_for('new_profile_page') }}">Create Profile</a>
+    </div>
+
+    <div class="management-summary">
+        <article>
+            <span class="choice-kicker">Profile details</span>
+            <h2>Personal context</h2>
+            <p>Store age, sex, allergies, medicines, chronic conditions, and relevant medical history for demo personalization.</p>
+        </article>
+        <article>
+            <span class="choice-kicker">Checkup import</span>
+            <h2>Structured records</h2>
+            <p>Paste checkup text and let the app organize it into a cleaner local record before saving it to a profile.</p>
+        </article>
+        <article>
+            <span class="choice-kicker">AI support</span>
+            <h2>Text-only AI structuring</h2>
+            <p>Use pasted checkup text to create a structured local record without image recognition or image generation.</p>
+        </article>
+    </div>
+
+    <section class="content-band compact">
+        <div class="section-heading">
+            <h2>Saved Profiles</h2>
+            <span>{{ profiles|length }} users</span>
+        </div>
+        <div class="profile-grid management-grid">
+            {% for profile in profiles %}
+            <article class="profile-card management-card">
+                <div>
+                    <span class="choice-kicker">Existing user</span>
+                    <h3>{{ profile.display_name or "Unnamed profile" }}</h3>
+                    <p>{{ profile.age or "Age not set" }} / {{ profile.sex or "sex not set" }} / {{ profile.record_count }} records</p>
+                </div>
+                <dl>
+                    <div><dt>Allergies</dt><dd>{{ profile.allergies or "Not specified" }}</dd></div>
+                    <div><dt>Conditions</dt><dd>{{ profile.chronic_conditions or "Not specified" }}</dd></div>
+                </dl>
+                <div class="button-row">
+                    <a class="button secondary" href="{{ url_for('edit_profile_page', profile_id=profile.id) }}">Edit Profile</a>
+                </div>
+            </article>
+            {% else %}
+            <article class="summary-text">
+                <h3>No saved users yet</h3>
+                <p>Create a profile when you want personalized intake context. Quick intake is still available from the AI Symptom Intake page.</p>
+                <a class="button primary" href="{{ url_for('new_profile_page') }}">Create Profile</a>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+</section>
+{% endblock %}

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}AI Symptom Intake{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header class="site-header">
+        <a class="brand" href="{{ url_for('index') }}">AI Symptom Intake</a>
+        <nav class="nav-links" aria-label="Primary">
+            <a href="{{ url_for('symptom_input_page') }}">Start Intake</a>
+            <a href="{{ url_for('profile_page') }}">Profile</a>
+            <a href="{{ url_for('uml_generator_page') }}">UML Generator</a>
+            <a href="{{ url_for('safety_notice_page') }}">Safety Notice</a>
+            <a href="{{ url_for('about_page') }}">About</a>
+        </nav>
+    </header>
+    <aside class="global-disclaimer">
+        <strong>Safety:</strong> {{ brief_disclaimer or "Info only. Not diagnosis or prescription." }}
+        <a href="{{ url_for('safety_notice_page') }}">Details</a>
+    </aside>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
