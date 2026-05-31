@@ -2,7 +2,7 @@
 
 ## Repository
 
-- Repository URL: `https://github.com/Lewei-Li24/dts114-deployable-app`
+- Repository URL: `https://github.com/Lewei-Li24/dts114-ai-symptom-intake-public`
 - Main branch: `main`
 
 ## Platform
@@ -11,7 +11,7 @@
 - Service type: Web Service
 - Runtime: Python
 - Root directory: `Task1/generated_project`
-- Live URL: add the Render URL after deployment
+- Live URL: add the Render URL after deployment and before final packaging
 
 ## Build and Start Commands
 
@@ -62,8 +62,8 @@ application can start inside the container.
 
 | Check | Expected Result | Actual Result |
 | --- | --- | --- |
-| `/` | HTTP 200 and homepage loads with generated banner | TODO |
-| `/api/health` | HTTP 200 and service status JSON returns | TODO |
+| `/` | HTTP 200 and homepage loads with generated banner | To be confirmed from the live Render URL |
+| `/api/health` | HTTP 200 and service status JSON returns | To be confirmed from the live Render URL |
 
 ## Known Limitations
 

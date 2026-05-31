@@ -41,6 +41,7 @@ flowchart TD
 - Activity Diagram：展示红旗症状检查必须发生在 AI 护理建议之前。
 - Sequence Diagram：展示浏览器只调用 Flask，APIFree key 和 AI 调用留在后端。
 - Class Diagram：说明 UserProfile、HealthRecord、UserSession、SymptomInput、FollowUpQuestion、SymptomSummary、CareGuidance 和 UMLDiagram 的关系。
+- Meta-Software Workflow Diagram：展示 Task1 Notebook 如何根据业务问题生成 Flask 项目、SDLC 文档、UML 和测试，属于“软件外部/生成器流程”视角。
 
 ## 安全设计重点
 

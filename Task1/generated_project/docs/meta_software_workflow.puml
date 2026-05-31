@@ -1,0 +1,30 @@
+@startuml
+title Meta-Software Generator Workflow
+
+actor "Student / Developer" as Student
+participant "Task1 Notebook" as Notebook
+participant "Prompt Templates" as Prompts
+participant "APIFree / DeepSeek" as AI
+participant "Generated Flask Project" as Project
+participant "Docs + UML Files" as Docs
+participant "Tests + CI Config" as QA
+
+Student -> Notebook : enter healthcare business problem
+Notebook -> Prompts : build generation prompts
+Prompts -> AI : request requirements, UML, code, tests
+AI --> Notebook : generated artifacts
+
+Notebook -> Project : write app.py, templates, static files
+Notebook -> Docs : write requirements, safety policy, PlantUML
+Notebook -> QA : write pytest files and workflow evidence
+
+Student -> Project : review generated system
+Student -> Docs : inspect generated documentation and diagrams
+Student -> QA : run tests and CI/CD checks
+
+note over Notebook,QA
+This diagram models the software-outside view:
+the notebook-driven meta-software process that
+generates the assessed Flask website and evidence.
+end note
+@enduml
