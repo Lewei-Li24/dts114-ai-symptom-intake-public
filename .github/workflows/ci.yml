@@ -38,6 +38,12 @@ jobs:
       - name: Run tests
         run: pytest -q
 
+      - name: Docker config files present
+        working-directory: .
+        run: |
+          test -f Dockerfile
+          test -f docker-compose.yml
+
   deploy-check:
     runs-on: ubuntu-latest
     needs: build-and-test

@@ -1,0 +1,9 @@
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      APIFREE_BASE_URL: https://api.apifree.ai/v1
+      APIFREE_MODEL: deepseek-ai/deepseek-v4-flash
+      APIFREE_API_KEY: ${APIFREE_API_KEY:-}
