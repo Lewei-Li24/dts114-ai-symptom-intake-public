@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    env:
+      PYTEST_ADDOPTS: "-p no:cacheprovider --basetemp=/tmp/ai-symptom-intake-pytest"
+      PYTHONDONTWRITEBYTECODE: "1"
+
+    defaults:
+      run:
+        working-directory: Task1/generated_project
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Syntax check
+        run: python -m compileall .
+
+      - name: Run tests
+        run: pytest -q
+
+      - name: Docker config files present
+        working-directory: .
+        run: |
+          test -f Dockerfile
+          test -f docker-compose.yml
+
+  deploy-check:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+
+    defaults:
+      run:
+        working-directory: Task1/generated_project
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Import app smoke test
+        run: |
+          python -c "from app import create_app; app = create_app({'TESTING': True}); print(app.name)"
