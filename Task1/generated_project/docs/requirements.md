@@ -11,6 +11,12 @@ The system is an AI symptom intake and triage-support website. It collects user-
 - Demonstrate AI-specific tooling through question generation and summary generation.
 - Keep medical safety boundaries clear and visible throughout the website.
 
+## User Personas
+
+- **Patient / demo user:** enters symptoms, answers AI follow-up questions, reviews a structured non-diagnostic summary, and decides whether saved profile context can be used.
+- **Student developer:** uses the notebook to generate Flask code, documentation, UML, tests, and deployment evidence from one healthcare business problem.
+- **Reviewer / marker:** checks that the generated system includes clear safety boundaries, UML evidence, testing, CI/CD, deployment notes, and responsible AI-use documentation.
+
 ## Functional Requirements
 
 | ID | Requirement | Priority |
