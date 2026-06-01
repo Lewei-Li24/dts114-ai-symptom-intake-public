@@ -18,20 +18,23 @@ The system is designed to support:
 The system is not a diagnosis tool and does not replace professional medical
 advice.
 
-## Version Plan
+## Version Plan and Evidence
 
-- `v0.1.0` Project setup
-- `v0.2.0` Notebook generator skeleton
-- `v0.3.0` SDLC documents and UML
-- `v0.4.0` Profile and intake workflow
-- `v0.5.0` AI summary, non-diagnostic care guidance, and UML generation API
-- `v0.6.0` Testing, CI/CD, deployment, and submission evidence
-- `v0.7.0` Docker deployment support
+- `v0.1.0` Initialize coursework structure and notebook generator
+- `v0.2.0` Add SDLC documentation and UML evidence
+- `v0.3.0` Implement generated Flask website and AI workflows
+- `v0.4.0` Add route/API tests and CI workflow
+- `v0.4.1` Fix CI workflow scope
+- `v0.5.0` Add Docker and deployment configuration
+- `v0.6.0` Prepare final coursework evidence package
+- `v0.6.1` Clarify UML workflow evidence
 
 ## Current Version
 
-`v0.7.0` adds Docker container configuration so the generated Flask application
-can be built and run in a reproducible container environment.
+`v0.6.1` is the final checked software version. It keeps the submission focused
+on the assessed workflow: notebook generation, Flask API and website, generated
+image evidence, UML, tests, CI/CD, Docker support, deployment configuration, and
+Task 2 evidence files.
 
 ## Docker Run
 
