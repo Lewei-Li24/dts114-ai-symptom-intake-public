@@ -5,6 +5,7 @@ import os
 import re
 import sqlite3
 import time
+import zlib
 from threading import Lock
 from pathlib import Path
 from typing import Any
@@ -1847,7 +1848,13 @@ def generate_uml_diagram(diagram_type: str, business_problem: str) -> dict[str, 
         f"Diagram type: {type_labels[diagram_type]}\n"
         "Return JSON with keys: diagram_type, title, plantuml, explanation. "
         "The plantuml value must start with @startuml and end with @enduml. "
-        "Keep labels short and suitable for a Flask API and website project."
+        "Keep labels short and suitable for a Flask API and website project. "
+        "Make the diagram specific to the submitted business problem. "
+        "If the business problem is about AI symptom intake, include symptom input, "
+        "safety checks, AI follow-up, structured summary, non-diagnostic guidance, "
+        "profile/history consent, SQLite storage, and protected backend AI calls where appropriate. "
+        "Do not invent login, token verification, payment, or unrelated authentication steps unless "
+        "the business problem explicitly asks for them."
     )
     model_result = call_model_json(prompt, system_prompt=system_prompt, required=True)
     plantuml = str(model_result.get("plantuml") or "").strip()
@@ -1859,10 +1866,61 @@ def generate_uml_diagram(diagram_type: str, business_problem: str) -> dict[str, 
         "title": str(model_result.get("title") or type_labels[diagram_type]),
         "plantuml": plantuml,
         "explanation": str(model_result.get("explanation") or "Generated from the submitted business problem."),
+        "render_svg_url": plantuml_render_url(plantuml, "svg"),
+        "render_png_url": plantuml_render_url(plantuml, "png"),
         "ai_source": "apifree_live",
         "provider": current_app.config.get("AI_PROVIDER"),
         "model": current_app.config.get("AI_MODEL"),
     }
+
+
+def plantuml_render_url(plantuml: str, output_format: str = "svg") -> str:
+    encoded = plantuml_encode(plantuml)
+    safe_format = "png" if output_format == "png" else "svg"
+    return f"https://www.plantuml.com/plantuml/{safe_format}/{encoded}"
+
+
+def plantuml_encode(plantuml: str) -> str:
+    compressor = zlib.compressobj(level=9, wbits=-15)
+    compressed = compressor.compress(plantuml.encode("utf-8")) + compressor.flush()
+    return "".join(_plantuml_append3bytes(compressed[i : i + 3]) for i in range(0, len(compressed), 3))
+
+
+def _plantuml_append3bytes(chunk: bytes) -> str:
+    b1 = chunk[0]
+    b2 = chunk[1] if len(chunk) > 1 else 0
+    b3 = chunk[2] if len(chunk) > 2 else 0
+    c1 = b1 >> 2
+    c2 = ((b1 & 0x3) << 4) | (b2 >> 4)
+    c3 = ((b2 & 0xF) << 2) | (b3 >> 6)
+    c4 = b3 & 0x3F
+    if len(chunk) == 1:
+        return _plantuml_encode6bit(c1) + _plantuml_encode6bit(c2)
+    if len(chunk) == 2:
+        return _plantuml_encode6bit(c1) + _plantuml_encode6bit(c2) + _plantuml_encode6bit(c3)
+    return (
+        _plantuml_encode6bit(c1)
+        + _plantuml_encode6bit(c2)
+        + _plantuml_encode6bit(c3)
+        + _plantuml_encode6bit(c4)
+    )
+
+
+def _plantuml_encode6bit(value: int) -> str:
+    if value < 10:
+        return chr(48 + value)
+    value -= 10
+    if value < 26:
+        return chr(65 + value)
+    value -= 26
+    if value < 26:
+        return chr(97 + value)
+    value -= 26
+    if value == 0:
+        return "-"
+    if value == 1:
+        return "_"
+    return "?"
 
 
 def normalize_health_report(report: dict[str, Any], source_text: str = "") -> dict[str, Any]:

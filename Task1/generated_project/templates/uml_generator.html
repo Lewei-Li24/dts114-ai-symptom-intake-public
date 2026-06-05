@@ -32,8 +32,23 @@
 
 <section class="content-panel">
     <div class="section-heading">
-        <h2>Generated PlantUML</h2>
+        <h2>Rendered UML Diagram</h2>
         <span id="uml-status">Waiting for input.</span>
+    </div>
+    <div id="uml-render-panel" class="uml-render-panel is-empty">
+        <img id="uml-rendered-image" alt="Rendered UML diagram will appear here.">
+        <p id="uml-render-empty" class="muted">The rendered diagram will appear automatically after generation.</p>
+    </div>
+    <div class="button-row">
+        <a id="uml-svg-link" class="secondary-button disabled-link" href="#" target="_blank" rel="noopener">Open SVG</a>
+        <a id="uml-png-link" class="secondary-button disabled-link" href="#" target="_blank" rel="noopener">Open PNG</a>
+    </div>
+</section>
+
+<section class="content-panel">
+    <div class="section-heading">
+        <h2>Generated PlantUML Source</h2>
+        <span>Use this text as SDLC/UML generation evidence.</span>
     </div>
     <pre id="uml-output" class="code-output">@startuml
 ' Generated UML will appear here.

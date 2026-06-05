@@ -932,6 +932,38 @@ select {
     white-space: pre;
 }
 
+.uml-render-panel {
+    min-height: 320px;
+    display: grid;
+    place-items: center;
+    padding: 18px;
+    overflow: auto;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+}
+
+.uml-render-panel img {
+    max-width: 100%;
+    height: auto;
+}
+
+.uml-render-panel.is-empty img {
+    display: none;
+}
+
+.button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.disabled-link {
+    pointer-events: none;
+    opacity: 0.45;
+}
+
 .profile-form {
     padding: 24px;
     border: 1px solid var(--line);
