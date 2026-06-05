@@ -25,9 +25,14 @@ GitHub Actions runs on pushes and pull requests to `main` or `master`.
 The workflow contains two jobs:
 
 - `build-and-test`: installs dependencies, checks Python syntax, runs pytest,
-  and confirms Docker configuration files are present.
-- `deploy-check`: imports the Flask app as a deployment smoke test after
-  `build-and-test` passes.
+  and validates the generated Flask project.
+- `docker-build`: verifies Docker configuration files and builds the container
+  image to prove the app can be packaged consistently.
+- `deploy-check`: imports the Flask app as a deployment smoke test after the
+  test and Docker build stages pass.
+
+The workflow also opts GitHub JavaScript actions into Node 24 to avoid
+deprecation warnings from older Node 20 action runtime notices.
 
 The successful workflow page should be captured as `Task2/screenshots/cicd.png`.
 

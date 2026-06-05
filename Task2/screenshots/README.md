@@ -9,7 +9,8 @@ Save the three required evidence screenshots in this folder:
 Recommended screenshot contents:
 
 - `commits.png`: show the repository name, branch, and visible commit list.
-- `cicd.png`: show the green successful workflow run and job names.
+- `cicd.png`: show the green successful workflow run and job names, ideally
+  including `build-and-test`, `docker-build`, and `deploy-check`.
 - `deployment.png`: show the live deployed homepage or Render service URL after deployment.
 
 Suggested capture pages:
