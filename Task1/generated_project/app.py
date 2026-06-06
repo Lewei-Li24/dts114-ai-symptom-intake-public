@@ -1519,7 +1519,7 @@ def call_model_json(
         for attempt in range(4):
             try:
                 with APIFREE_REQUEST_LOCK:
-                    response = requests.post(
+                    response = post_without_system_proxy(
                         endpoint,
                         headers=headers,
                         json=payload,
@@ -1564,6 +1564,24 @@ def call_model_json(
     return {}
 
 
+def post_without_system_proxy(url: str, **kwargs: Any) -> requests.Response:
+    session = requests.Session()
+    session.trust_env = False
+    try:
+        return session.post(url, **kwargs)
+    finally:
+        session.close()
+
+
+def get_without_system_proxy(url: str, **kwargs: Any) -> requests.Response:
+    session = requests.Session()
+    session.trust_env = False
+    try:
+        return session.get(url, **kwargs)
+    finally:
+        session.close()
+
+
 def is_concurrency_error(message: str) -> bool:
     lowered = message.lower()
     return "concurrency" in lowered or "rate limit" in lowered or "too many" in lowered
@@ -1588,7 +1606,7 @@ def list_ai_models() -> tuple[dict[str, Any], int]:
     api_key = current_app.config.get("AI_API_KEY")
     endpoint = f"{current_app.config['AI_BASE_URL'].rstrip('/')}/models"
     try:
-        response = requests.get(
+        response = get_without_system_proxy(
             endpoint,
             headers={"Authorization": f"Bearer {api_key}"},
             timeout=current_app.config["AI_TIMEOUT_SECONDS"],
