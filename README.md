@@ -28,13 +28,19 @@ advice.
 - `v0.5.0` Add Docker and deployment configuration
 - `v0.6.0` Prepare final coursework evidence package
 - `v0.6.1` Clarify UML workflow evidence
+- `v0.6.2` Document version control and CI evidence
+- `v0.6.3` Align inception artifacts with the AI-DLC flow
+- `v0.6.4` Strengthen CI/CD and cleanup artifacts
+- `v0.6.5` Add automatic UML rendering preview
+- `v0.6.6` Fix APIFree proxy handling for live model calls
+- `v0.6.7` Hide runtime API diagnostics from the user intake UI
 
 ## Current Version
 
-`v0.6.1` is the final checked software version. It keeps the submission focused
+`v0.6.7` is the final checked software version. It keeps the submission focused
 on the assessed workflow: notebook generation, Flask API and website, generated
-image evidence, UML, tests, CI/CD, Docker support, deployment configuration, and
-Task 2 evidence files.
+image evidence, UML generation, tests, CI/CD, Docker support, deployment
+configuration, user-facing API-key protection, and Task 2 evidence files.
 
 ## Docker Run
 
