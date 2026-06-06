@@ -105,21 +105,6 @@
                 <span class="status">{{ "Personalized mode" if selected_profile else "Quick mode" }}</span>
                 <p>{{ "The current chat history is sent for accuracy. The selected profile is used only when the consent toggle is enabled." if selected_profile else "The current chat history is sent to the model so the assistant can summarize accurately." }}</p>
             </div>
-            <div class="ai-provider-panel {% if not ai_configured %}warning{% endif %}" data-ai-provider-panel>
-                <div>
-                    <strong data-ai-health-summary>{{ ai_provider_name ~ " model configured" if ai_configured else "APIFree key not configured" }}</strong>
-                    {% if ai_last_error %}
-                    <span data-ai-health-detail>Last model error: {{ ai_last_error }}</span>
-                    {% else %}
-                    <span data-ai-health-detail>{{ "The chat will call the model API." if ai_configured else "Restart with scripts/start_apifree.ps1 and paste your APIFree key to enable live model answers." }}</span>
-                    {% endif %}
-                </div>
-                <span>{{ ai_model_name }} via {{ ai_base_url }}</span>
-            </div>
-            <div class="connection-check-row">
-                <button class="button secondary compact-button" type="button" data-ai-test-button>Test APIFree Connection</button>
-                <span data-ai-test-result>Use this before demoing the chat.</span>
-            </div>
             {% if selected_profile %}
             <label class="toggle-row">
                 <input type="checkbox" data-allow-history {% if selected_profile and selected_profile.consent_use_history %}checked{% endif %} {% if not selected_profile %}disabled{% endif %}>

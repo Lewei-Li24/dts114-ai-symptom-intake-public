@@ -5,11 +5,6 @@ const chatStatus = document.querySelector("[data-chat-status]");
 const chatActions = document.querySelector("[data-chat-actions]");
 const allowHistory = document.querySelector("[data-allow-history]");
 const chatPanel = document.querySelector("[data-chat-panel]");
-const aiProviderPanel = document.querySelector("[data-ai-provider-panel]");
-const aiHealthSummary = document.querySelector("[data-ai-health-summary]");
-const aiHealthDetail = document.querySelector("[data-ai-health-detail]");
-const aiTestButton = document.querySelector("[data-ai-test-button]");
-const aiTestResult = document.querySelector("[data-ai-test-result]");
 const profileId = chatPanel ? chatPanel.dataset.profileId : "";
 const sendButton = chatForm ? chatForm.querySelector("button[type='submit']") : null;
 let chatHistory = [];
@@ -33,10 +28,8 @@ function formatApiFailure(payload, fallback) {
     }
     if (payload.error === "live_ai_required") {
         return [
-            payload.message || "Live APIFree is required for this answer.",
-            `Current model: ${payload.ai_model || "not configured"}`,
-            `Last error: ${payload.ai_last_error || "not available"}`,
-            "Restart the server with scripts/start_apifree.bat, paste a valid APIFree key, then reload this page."
+            "The AI service is not ready for this answer.",
+            "Please restart the Flask server with the configured API key, then reload this page."
         ].join("\n");
     }
     return payload.message || payload.error || fallback;
@@ -45,57 +38,6 @@ function formatApiFailure(payload, fallback) {
 function setChatStatus(text, state) {
     chatStatus.textContent = text;
     chatStatus.dataset.state = state;
-}
-
-async function refreshAiHealth() {
-    if (!aiHealthSummary || !aiHealthDetail) {
-        return;
-    }
-    try {
-        const response = await fetch("/api/health");
-        const health = await response.json();
-        const apifreeReady = health.ai_provider === "APIFree" && health.ai_configured && !health.ai_last_error;
-        aiProviderPanel.classList.toggle("warning", !apifreeReady);
-        aiProviderPanel.classList.toggle("connected", apifreeReady);
-        if (apifreeReady) {
-            aiHealthSummary.textContent = "APIFree model ready";
-            aiHealthDetail.textContent = `Live model: ${health.ai_model} via ${health.ai_base_url}`;
-            setChatStatus("APIFree is configured. Use Test APIFree before the demo, then start chatting.", "success");
-        } else if (health.ai_configured) {
-            aiHealthSummary.textContent = "APIFree needs testing";
-            aiHealthDetail.textContent = `Configured model: ${health.ai_model}. Last error: ${health.ai_last_error || "not tested yet"}`;
-            setChatStatus("The app will require a live APIFree response. Click Test APIFree to confirm the key/model.", "warning");
-        } else {
-            aiHealthSummary.textContent = "APIFree key not configured";
-            aiHealthDetail.textContent = "Restart with scripts/start_apifree.ps1 and paste your APIFree key to enable live model answers.";
-            setChatStatus("APIFree is not connected. AI chat will ask you to configure the key instead of using fixed fallback text.", "warning");
-        }
-    } catch (error) {
-        setChatStatus("Could not check AI connection. Make sure Flask is running.", "error");
-    }
-}
-
-async function testAiConnection() {
-    if (!aiTestButton || !aiTestResult) {
-        return;
-    }
-    aiTestButton.disabled = true;
-    aiTestResult.textContent = "Testing live model...";
-    try {
-        const response = await fetch("/api/ai/test", { method: "POST" });
-        const payload = await response.json();
-        if (!response.ok || payload.ok === false) {
-            throw new Error(payload.message || payload.error || "Model test failed.");
-        }
-        aiTestResult.textContent = `Connected: ${payload.provider} / ${payload.model}`;
-        setChatStatus("APIFree model test passed. New chat answers will use the live model.", "success");
-        await refreshAiHealth();
-    } catch (error) {
-        aiTestResult.textContent = error.message;
-        setChatStatus("APIFree test failed. Check that the server was started with APIFREE_API_KEY.", "error");
-    } finally {
-        aiTestButton.disabled = false;
-    }
 }
 
 function showCompletionActions(payload) {
@@ -164,8 +106,4 @@ chatInput.addEventListener("keydown", (event) => {
     }
 });
 
-if (aiTestButton) {
-    aiTestButton.addEventListener("click", testAiConnection);
-}
-
-refreshAiHealth();
+setChatStatus("Ready. Describe your symptom to start the AI-guided intake.", "success");

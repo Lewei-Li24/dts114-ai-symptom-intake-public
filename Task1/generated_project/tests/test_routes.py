@@ -22,7 +22,9 @@ def test_symptom_input_chat_mode_loads(client):
     assert response.status_code == 200
     assert b"AI questions" in response.data
     assert b"symptom_chat.js" in response.data
-    assert b"APIFree key not configured" in response.data
+    assert b"APIFree key not configured" not in response.data
+    assert b"Test APIFree Connection" not in response.data
+    assert b"api.apifree.ai" not in response.data
 
 
 def test_safety_notice_page_loads(client):
